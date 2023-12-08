@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PlatformSelect } from './screens/PlatformSelect';
+import { Merchant } from './screens/Merchant';
 
 function App() {
 
@@ -8,7 +9,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" exact element={<PlatformSelect />} />
-        {/* <Route path="/user" exact element={<Screen2 />} /> */}
+        <Route path="/merchant" exact element={<Merchant />} />
       </Routes>
     </Router>
   );
