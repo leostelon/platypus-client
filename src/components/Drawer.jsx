@@ -89,14 +89,14 @@ export function Drawer({ smaller }) {
 	const [index, setIndex] = useState(0);
 
 	function updateIndex(path) {
-		switch (path.split("/")[1]) {
-			case "home":
+		switch (path) {
+			case "/merchant":
 				return setIndex(0);
-			case "payments":
+			case "/merchant/payments":
 				return setIndex(1);
-			case "bills":
+			case "/merchant/bills":
 				return setIndex(2);
-			case "create":
+			case "/merchant/create":
 				return setIndex(3);
 			default:
 				setIndex(0);
