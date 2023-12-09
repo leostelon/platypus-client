@@ -8,6 +8,9 @@ import Web3 from "web3";
 import { Notification } from "../components/Notification";
 import { ChatMessage, getWakuNode } from "../utils/waku";
 import { createDecoder } from "@waku/sdk";
+import Userbg from "../assets/user-bg.png";
+import Logo from "../assets/logo.png";
+import { PayDialog } from "../components/Transfer";
 
 export const User = () => {
 	const [address, setAddress] = useState("");
@@ -16,6 +19,7 @@ export const User = () => {
 	const [notifData, setNotifData] = useState({});
 	const [open, setOpen] = useState(false);
 	const node = useRef(undefined);
+	const [payOpen, setPayOpen] = useState(true);
 
 	async function listenMessage() {
 		try {
@@ -58,6 +62,7 @@ export const User = () => {
 
 	function handleNotificationDialogClose() {
 		setNotification(false);
+		setPayOpen(false);
 	}
 
 	useEffect(() => {
@@ -94,6 +99,10 @@ export const User = () => {
 				handleExternalClose={handleNotificationDialogClose}
 				data={notifData}
 			/>
+			<PayDialog
+				isOpen={payOpen}
+				handleExternalClose={handleNotificationDialogClose}
+			/>
 			<Box
 				sx={{
 					backgroundColor: "#FDE9E9",
@@ -101,10 +110,23 @@ export const User = () => {
 					minWidth: "420px",
 					width: "100%",
 					p: 2,
+					background: `url("${Userbg}")`,
+					backgroundPosition: "top",
+					backgroundSize: "cover",
+					backgroundRepeat: "no-repeat",
 				}}
 			>
-				<Box display={"flex"} alignItems="center">
-					<Avatar sx={{ height: "70px", width: "70px", mr: 2 }} />
+				<Box display={"flex"} alignItems="center" mt={2} mb={14}>
+					<Avatar
+						sx={{
+							height: "55px",
+							width: "55px",
+							mr: 2,
+							bgcolor: "white",
+							p: 0.75,
+						}}
+						src={Logo}
+					/>
 					<Tooltip
 						title="Copied!"
 						placement="top"
@@ -162,6 +184,7 @@ export const User = () => {
 							backgroundColor: "white",
 						}}
 						className={"user-action-button"}
+						onClick={() => setPayOpen(true)}
 					>
 						<MdOutlineArrowOutward color="black" />
 						<Box ml={1}>Transfer</Box>
