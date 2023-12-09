@@ -7,12 +7,13 @@ import QRCode from "react-qr-code";
 import { useState } from "react";
 import { PrimaryGrey } from "../constant";
 import { ChatMessage, getWakuNode } from "../utils/waku";
-import { createDecoder } from "@waku/sdk";
+import { createDecoder, createEncoder } from "@waku/sdk";
 import { useRef } from "react";
 
 export const Bill = () => {
 	const { id } = useParams();
 	const [address, setAddress] = useState("");
+	const [bill, setBill] = useState(false);
 	const contentTopic = "/platypus/82c52569-1b35-4702-afe3-1fdb498ba199";
 	const decoder = createDecoder(contentTopic);
 	const node = useRef(undefined);
@@ -57,7 +58,38 @@ export const Bill = () => {
 
 	async function gB(id) {
 		const response = await createBill(id);
+		setBill(response);
 		console.log(response);
+	}
+
+	async function sendRequest(address) {
+		// Choose a content topic
+		const contentTopic = `/platypus/${address}`;
+
+		// Create a message encoder and decoder
+		const encoder = createEncoder({
+			contentTopic: contentTopic, // message content topic
+			ephemeral: true, // allows messages not be stored on the network
+		});
+		const add = localStorage.getItem("address");
+		const protoMessage = ChatMessage.create({
+			timestamp: Date.now(),
+			sender: add,
+			amount: bill.payment.amount,
+			message: bill.uid,
+		});
+
+		// Serialise the message using Protobuf
+		const serialisedMessage = ChatMessage.encode(protoMessage).finish();
+		console.log("sending");
+
+		// Send the message using Light Push
+		const node = await getWakuNode();
+
+		await node.lightPush.send(encoder, {
+			payload: serialisedMessage,
+		});
+		console.log("sent");
 	}
 
 	useEffect(() => {
@@ -119,7 +151,7 @@ export const Bill = () => {
 							<input
 								type="text"
 								id={`title`}
-								placeholder="Enter Amount"
+								placeholder="Enter Address"
 								value={address}
 								onInput={(e) => {
 									setAddress(e.target.value);
@@ -144,6 +176,8 @@ export const Bill = () => {
 									textAlign: "center",
 								}}
 								onClick={async () => {
+									await sendRequest(address);
+									alert("Request has been sent.");
 									// Request Method here
 								}}
 							>

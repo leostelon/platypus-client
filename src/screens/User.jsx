@@ -1,25 +1,84 @@
 import "../styles/User.css";
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Tooltip } from "@mui/material";
 import { PrimaryGrey } from "../constant";
 import { MdAdd, MdOutlineArrowOutward } from "react-icons/md";
 import { shortText } from "../utils/shortText";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getWeb3 } from "../utils/safe";
 import Web3 from "web3";
+import { Notification } from "../components/Notification";
+import { ChatMessage, getWakuNode } from "../utils/waku";
+import { createDecoder } from "@waku/sdk";
 
 export const User = () => {
-	const address = localStorage.getItem("address");
+	const [address, setAddress] = useState("");
 	const [balance, setBalance] = useState("0");
+	const [notification, setNotification] = useState(false);
+	const [notifData, setNotifData] = useState({});
+	const [open, setOpen] = useState(false);
+	const node = useRef(undefined);
+
+	async function listenMessage() {
+		try {
+			// Create the callback function
+			const callback = (wakuMessage) => {
+				// Check if there is a payload on the message
+				if (!wakuMessage.payload) return;
+				// Render the messageObj as desired in your application
+				const messageObj = ChatMessage.decode(wakuMessage.payload);
+				setNotification(true);
+				setNotifData(messageObj);
+			};
+
+			// Create a filter subscription
+			const subscription = await node.current.filter.createSubscription();
+
+			// Subscribe to content topics and process new messages
+			const address = localStorage.getItem("address");
+			const decoder = createDecoder(`/platypus/${address}`);
+
+			await subscription.subscribe([decoder], callback);
+		} catch (error) {
+			setTimeout(() => {
+				listenMessage();
+			}, 2000);
+		}
+	}
 
 	async function getBalance() {
-		const address = localStorage.getItem("address");
-		const web3 = await getWeb3();
-		const b = await web3.eth.getBalance(address);
-		setBalance(Number(Web3.utils.fromWei(b, "ether")).toFixed(4));
+		try {
+			const address = localStorage.getItem("address");
+			setAddress(address);
+			const web3 = await getWeb3();
+			const b = await web3.eth.getBalance(address);
+			setBalance(Number(Web3.utils.fromWei(b, "ether")).toFixed(4));
+		} catch (error) {
+			console.log(error.message);
+		}
+	}
+
+	function handleNotificationDialogClose() {
+		setNotification(false);
 	}
 
 	useEffect(() => {
-		getBalance();
+		const a = localStorage.getItem("address");
+		if (!a || a === undefined || a === "") {
+			return window.location.replace("/");
+		}
+		// getBalance();
+		let connected = false;
+		let timer = setInterval(async () => {
+			if (!connected) {
+				node.current = await getWakuNode();
+				if (node.current && node.current.isStarted()) {
+					connected = true;
+					clearInterval(timer);
+					listenMessage();
+					console.log("cleared");
+				}
+			}
+		}, 2000);
 	}, []);
 
 	return (
@@ -31,6 +90,11 @@ export const User = () => {
 				justifyContent: "center",
 			}}
 		>
+			<Notification
+				isOpen={notification}
+				handleExternalClose={handleNotificationDialogClose}
+				data={notifData}
+			/>
 			<Box
 				sx={{
 					backgroundColor: "#FDE9E9",
@@ -42,7 +106,22 @@ export const User = () => {
 			>
 				<Box display={"flex"} alignItems="center">
 					<Avatar sx={{ height: "70px", width: "70px", mr: 2 }} />
-					<h1>{shortText(address)}</h1>
+					<Tooltip
+						title="Copied!"
+						placement="top"
+						open={open}
+						onClose={() => setOpen(false)}
+					>
+						<h1
+							onClick={() => {
+								navigator.clipboard.writeText(address);
+								setOpen(true);
+							}}
+							style={{ cursor: "pointer" }}
+						>
+							{shortText(address)}
+						</h1>
+					</Tooltip>
 				</Box>
 				<Box
 					sx={{

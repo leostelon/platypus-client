@@ -2,6 +2,7 @@ import "../styles/PlatformSelect.css";
 import React from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { safeSignin } from "../utils/safe";
 
 export const PlatformSelect = () => {
 	const navigate = useNavigate();
@@ -31,7 +32,10 @@ export const PlatformSelect = () => {
 					Merchant
 				</Box>
 				<Box
-					onClick={() => navigate("/user")}
+					onClick={async () => {
+						await safeSignin();
+						navigate("/user");
+					}}
 					className={"platformselect-type"}
 				>
 					User

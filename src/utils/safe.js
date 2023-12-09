@@ -31,8 +31,7 @@ export async function initSafeAuthPack() {
 }
 
 export async function getWeb3() {
-    await initSafeAuthPack()
-    const p = getSafeProvider();
+    const p = await getSafeProvider();
     console.log("provider here", p)
     const web3 = new Web3(p);
     return web3;
