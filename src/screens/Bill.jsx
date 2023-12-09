@@ -119,7 +119,10 @@ export const Bill = () => {
 				<h1>Payment Request</h1>
 				<br />
 				<br />
-				<QRCode value="hey" size={150} />
+				<QRCode
+					value={`http://localhost:3000/checkout/${bill.uid ? bill.uid : ""}`}
+					size={150}
+				/>
 				<br />
 				<p style={{ fontWeight: 500 }}>Scan and pay using Platypus app</p>
 				<br />

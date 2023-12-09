@@ -11,6 +11,7 @@ import { createDecoder } from "@waku/sdk";
 import Userbg from "../assets/user-bg.png";
 import Logo from "../assets/logo.png";
 import { PayDialog } from "../components/Transfer";
+import { RecieveDialog } from "../components/Recieve";
 
 export const User = () => {
 	const [address, setAddress] = useState("");
@@ -19,7 +20,8 @@ export const User = () => {
 	const [notifData, setNotifData] = useState({});
 	const [open, setOpen] = useState(false);
 	const node = useRef(undefined);
-	const [payOpen, setPayOpen] = useState(true);
+	const [payOpen, setPayOpen] = useState(false);
+	const [recieveOpen, setRecieveOpen] = useState(false);
 
 	async function listenMessage() {
 		try {
@@ -62,6 +64,7 @@ export const User = () => {
 
 	function handleNotificationDialogClose() {
 		setNotification(false);
+		setRecieveOpen(false);
 		setPayOpen(false);
 	}
 
@@ -101,6 +104,10 @@ export const User = () => {
 			/>
 			<PayDialog
 				isOpen={payOpen}
+				handleExternalClose={handleNotificationDialogClose}
+			/>
+			<RecieveDialog
+				isOpen={recieveOpen}
 				handleExternalClose={handleNotificationDialogClose}
 			/>
 			<Box
@@ -175,6 +182,7 @@ export const User = () => {
 							mr: 1,
 						}}
 						className={"user-action-button"}
+						onClick={() => setRecieveOpen(true)}
 					>
 						<MdAdd />
 						<Box ml={1}>Add Money</Box>
