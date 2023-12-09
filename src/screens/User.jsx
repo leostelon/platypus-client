@@ -1,5 +1,12 @@
 import "../styles/User.css";
-import { Avatar, Box, Tooltip } from "@mui/material";
+import {
+	Avatar,
+	Box,
+	ListItem,
+	ListItemIcon,
+	ListItemText,
+	Tooltip,
+} from "@mui/material";
 import { PrimaryGrey } from "../constant";
 import { MdAdd, MdOutlineArrowOutward } from "react-icons/md";
 import { shortText } from "../utils/shortText";
@@ -12,6 +19,8 @@ import Userbg from "../assets/user-bg.png";
 import Logo from "../assets/logo.png";
 import { PayDialog } from "../components/Transfer";
 import { RecieveDialog } from "../components/Recieve";
+import { getTransactionsByAccount } from "../api/transaction";
+import { GoArrowDownLeft } from "react-icons/go";
 
 export const User = () => {
 	const [address, setAddress] = useState("");
@@ -22,6 +31,7 @@ export const User = () => {
 	const node = useRef(undefined);
 	const [payOpen, setPayOpen] = useState(false);
 	const [recieveOpen, setRecieveOpen] = useState(false);
+	const [transactions, setTransactions] = useState([]);
 
 	async function listenMessage() {
 		try {
@@ -57,6 +67,7 @@ export const User = () => {
 			const web3 = new Web3("https://forno.celo.org");
 			const b = await web3.eth.getBalance(address);
 			setBalance(Number(Web3.utils.fromWei(b, "ether")).toFixed(4));
+			gT(address);
 		} catch (error) {
 			console.log(error.message);
 		}
@@ -66,6 +77,11 @@ export const User = () => {
 		setNotification(false);
 		setRecieveOpen(false);
 		setPayOpen(false);
+	}
+
+	async function gT(ad) {
+		const res = await getTransactionsByAccount(ad);
+		setTransactions(res.result);
 	}
 
 	useEffect(() => {
@@ -200,6 +216,23 @@ export const User = () => {
 				</Box>
 				<Box mt={4}>
 					<h3 style={{ marginBottom: "8px" }}>All Activity</h3>
+				</Box>
+				<Box>
+					{transactions.map((t, i) => {
+						return (
+							<ListItem
+								key={i}
+								secondaryAction={
+									<h4>{Number(Web3.utils.fromWei(t.value, "ether")).toFixed(2)}ETH</h4>
+								}
+							>
+								<ListItemIcon>
+									<GoArrowDownLeft />
+								</ListItemIcon>
+								<ListItemText primary={shortText(t.from)} secondary="Jan 7, 2014" />
+							</ListItem>
+						);
+					})}
 				</Box>
 			</Box>
 		</Box>
