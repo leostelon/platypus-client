@@ -9,11 +9,17 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import { PaymentTile } from "../components/PaymentTile";
 import { getPayments } from "../api/payment";
 import { LineChart } from "@mui/x-charts/LineChart";
+import { getTransactionsByAccount } from "../api/transaction";
+import Web3 from "web3";
 
 export const Merchant = () => {
 	const [address, setAddress] = useState("");
 	const [paymentLoading, setPaymentLoading] = useState(true);
 	const [payments, setPayments] = useState([]);
+	const [transactions, setTransactions] = useState({
+		amount: [],
+		time: [],
+	});
 
 	async function gP() {
 		setPaymentLoading(true);
@@ -26,6 +32,16 @@ export const Merchant = () => {
 	function getAddress() {
 		const ad = localStorage.getItem("address");
 		setAddress(ad);
+		gT(ad);
+	}
+
+	async function gT(ad) {
+		const res = await getTransactionsByAccount(ad);
+		const amount = res.result.map((r) =>
+			parseFloat(Number(Web3.utils.fromWei(r.value, "ether")).toFixed(3))
+		);
+		const time = res.result.map((r) => new Date(r.timeStamp * 1000));
+		setTransactions({ amount, time });
 	}
 
 	useEffect(() => {
@@ -68,10 +84,11 @@ export const Merchant = () => {
 											strokeWidth: 4,
 										},
 									}}
-									xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+									xAxis={[{ data: [1, 2, 3, 5] }]}
+									// xAxis={[{ data: transactions.time }]}
 									series={[
 										{
-											data: [2, 5.5, 2, 8.5, 1.5, 5],
+											data: transactions.amount,
 											area: true,
 											color: "#4443FF",
 										},
