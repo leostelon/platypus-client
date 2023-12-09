@@ -14,12 +14,15 @@ export const PaymentTile = ({ payment }) => {
 
 	return (
 		<tr>
+			<td>{shortText(payment._id)}</td>
+			<td>{shortText(payment.address)}</td>
+			<td>{payment.amount}</td>
 			<td
 				style={{ fontWeight: "500", color: "#303031", display: "flex" }}
 				onMouseEnter={toggleCopy}
 				onMouseLeave={toggleCopy}
 			>
-				{shortText(payment._id)}
+				Copy
 				<Tooltip
 					title="Copied!"
 					placement="top"
@@ -28,7 +31,9 @@ export const PaymentTile = ({ payment }) => {
 				>
 					<Box
 						onClick={() => {
-							navigator.clipboard.writeText(payment.job_id);
+							navigator.clipboard.writeText(
+								`http://localhost:3000/payment/${payment._id}`
+							);
 							setOpen(true);
 						}}
 					>
@@ -43,9 +48,6 @@ export const PaymentTile = ({ payment }) => {
 					</Box>
 				</Tooltip>
 			</td>
-			<td>{shortText(payment.address)}</td>
-			<td>{payment.amount}</td>
-			<td>{"Copy"}</td>
 			<td>{"Request"}</td>
 			{/* <td>09/04/2023 20:29</td> */}
 			<td>{new Date(payment.createdAt).toDateString()}</td>

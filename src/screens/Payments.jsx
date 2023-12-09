@@ -55,7 +55,7 @@ export const Payments = () => {
 										<th>Id</th>
 										<th>Payment Address</th>
 										<th>Amount</th>
-										<th>Copy Link</th>
+										<th>Payment Link</th>
 										<th>Request</th>
 										<th>Created</th>
 									</tr>
