@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { getBill } from "../api/bill";
 import { useState } from "react";
 import { PrimaryGrey } from "../constant";
+import { ChatMessage, getWakuNode } from "../utils/waku";
+import { createEncoder } from "@waku/sdk";
 
 export const Checkout = () => {
 	const [loading, setLoading] = useState(true);
@@ -17,6 +19,35 @@ export const Checkout = () => {
 		setBill(bill);
 		console.log(bill);
 		setLoading(false);
+	}
+
+	async function sendMessage() {
+		// Choose a content topic
+		const contentTopic = "/platypus/82c52569-1b35-4702-afe3-1fdb498ba199";
+
+		// Create a message encoder and decoder
+		const encoder = createEncoder({
+			contentTopic: contentTopic, // message content topic
+			ephemeral: true, // allows messages not be stored on the network
+		});
+
+		const protoMessage = ChatMessage.create({
+			timestamp: Date.now(),
+			sender: "Alice",
+			message: "Hello, World!",
+		});
+
+		// Serialise the message using Protobuf
+		const serialisedMessage = ChatMessage.encode(protoMessage).finish();
+		console.log("sending");
+
+		// Send the message using Light Push
+		const node = await getWakuNode();
+
+		await node.lightPush.send(encoder, {
+			payload: serialisedMessage,
+		});
+		console.log("sent");
 	}
 
 	useEffect(() => {
@@ -79,7 +110,7 @@ export const Checkout = () => {
 							textAlign: "center",
 						}}
 						onClick={async () => {
-							// Request Method here
+							sendMessage();
 						}}
 					>
 						Pay

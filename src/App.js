@@ -8,7 +8,28 @@ import { User } from './screens/User';
 import { Bill } from './screens/Bill';
 import { Checkout } from './screens/Checkout';
 
+import { waitForRemotePeer, Protocols } from "@waku/sdk";
+import { getWakuNode, initNode, } from './utils/waku';
+import { useEffect } from 'react';
+
 function App() {
+  // start waku
+  async function initWaku() {
+    // Create and start a Light Node
+    await initNode();
+    const node = await getWakuNode()
+
+    // Wait for a successful peer connection
+    await waitForRemotePeer(node, [
+      Protocols.LightPush,
+      Protocols.Filter,
+    ]);
+
+  }
+
+  useEffect(() => {
+    initWaku()
+  }, [])
 
   return (
     <Router>
