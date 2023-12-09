@@ -5,9 +5,11 @@ import Platypus from "../contracts/Platypus.json";
 import Web3 from "web3";
 import { getWalletAddress } from "../utils/wallet";
 import { distributeFunds } from "../api/admin";
+import { useNavigate } from "react-router-dom";
 
 export const Admin = () => {
 	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 	async function dFC(address, amount) {
 		setLoading(true);
 		const web3 = new Web3(window.ethereum);
@@ -50,7 +52,12 @@ export const Admin = () => {
 		}
 		dFC(response.address, newAmounts);
 	}
-	useEffect(() => {}, []);
+	useEffect(() => {
+		const p = prompt("Enter admin password");
+		if (p !== "password") {
+			navigate("/merchant");
+		}
+	}, []);
 
 	return (
 		<Box sx={{ display: "flex" }}>

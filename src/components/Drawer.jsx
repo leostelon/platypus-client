@@ -10,7 +10,13 @@ import {
 	AiOutlineHome,
 	AiOutlinePlusCircle,
 } from "react-icons/ai";
-import { MdMoney, MdOutlineMoney, MdPayment } from "react-icons/md";
+import {
+	MdLock,
+	MdLockOutline,
+	MdMoney,
+	MdOutlineMoney,
+	MdPayment,
+} from "react-icons/md";
 import { Avatar } from "@mui/material";
 
 const drawerWidth = 260;
@@ -39,6 +45,12 @@ const mainList = [
 		i: () => <AiOutlinePlusCircle />,
 		ai: () => <AiFillPlusCircle />,
 		path: "/merchant/create",
+	},
+	{
+		text: "Admin",
+		i: () => <MdLockOutline />,
+		ai: () => <MdLock />,
+		path: "/merchant/admin",
 	},
 ];
 
@@ -98,6 +110,8 @@ export function Drawer({ smaller }) {
 				return setIndex(2);
 			case "/merchant/create":
 				return setIndex(3);
+			case "/merchant/admin":
+				return setIndex(4);
 			default:
 				setIndex(0);
 		}
