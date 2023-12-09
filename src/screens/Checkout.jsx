@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBill } from "../api/bill";
 import { useState } from "react";
 import { PrimaryGrey } from "../constant";
@@ -17,6 +17,7 @@ export const Checkout = () => {
 	const [paymentLoading, setPaymentLoading] = useState(false);
 	const { bill_id } = useParams();
 	const [bill, setBill] = useState();
+	const navigate = useNavigate();
 
 	async function gB(bill_id) {
 		setLoading(true);
@@ -28,7 +29,7 @@ export const Checkout = () => {
 
 	async function sendMessage() {
 		// Choose a content topic
-		const contentTopic = "/platypus/82c52569-1b35-4702-afe3-1fdb498ba199";
+		const contentTopic = "/platypus/" + bill.uid;
 
 		// Create a message encoder and decoder
 		const encoder = createEncoder({
@@ -38,13 +39,13 @@ export const Checkout = () => {
 
 		const protoMessage = ChatMessage.create({
 			timestamp: Date.now(),
-			sender: "Alice",
-			message: "Hello, World!",
+			sender: "completed-bill",
+			amount: "0",
+			message: "Bill paid",
 		});
 
 		// Serialise the message using Protobuf
 		const serialisedMessage = ChatMessage.encode(protoMessage).finish();
-		console.log("sending");
 
 		// Send the message using Light Push
 		const node = await getWakuNode();
@@ -52,7 +53,7 @@ export const Checkout = () => {
 		await node.lightPush.send(encoder, {
 			payload: serialisedMessage,
 		});
-		console.log("sent");
+		navigate("/completed");
 	}
 
 	async function pay() {
@@ -87,7 +88,6 @@ export const Checkout = () => {
 				.on("receipt", async function (receipt) {
 					sendMessage();
 					setPaymentLoading(false);
-					alert("Succesfully paid🥳🍾");
 				});
 			setPaymentLoading(false);
 		} catch (error) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createBill } from "../api/bill";
 import { Box } from "@mui/material";
 import QRCode from "react-qr-code";
@@ -14,9 +14,10 @@ export const Bill = () => {
 	const { id } = useParams();
 	const [address, setAddress] = useState("");
 	const [bill, setBill] = useState(false);
-	const contentTopic = "/platypus/82c52569-1b35-4702-afe3-1fdb498ba199";
-	const decoder = createDecoder(contentTopic);
+	const billRef = useRef({});
+	const [connected, setConnected] = useState(false);
 	const node = useRef(undefined);
+	const navigate = useNavigate();
 
 	async function listenMessage() {
 		try {
@@ -27,12 +28,14 @@ export const Bill = () => {
 				// Render the messageObj as desired in your application
 				const messageObj = ChatMessage.decode(wakuMessage.payload);
 				console.log(messageObj);
+				navigate("/completed?isbill=true");
 			};
 
 			// Create a filter subscription
 			const subscription = await node.current.filter.createSubscription();
 
 			// Subscribe to content topics and process new messages
+			const decoder = createDecoder("/platypus/" + billRef.current.uid);
 			await subscription.subscribe([decoder], callback);
 		} catch (error) {
 			setTimeout(() => {
@@ -41,25 +44,21 @@ export const Bill = () => {
 		}
 	}
 
-	useEffect(() => {
-		let connected = false;
+	async function gB(id) {
+		const response = await createBill(id);
+		setBill(response);
+		billRef.current = response;
 		let timer = setInterval(async () => {
 			if (!connected) {
 				node.current = await getWakuNode();
 				if (node.current && node.current.isStarted()) {
-					connected = true;
+					setConnected(true);
 					clearInterval(timer);
-					listenMessage();
+					await listenMessage(response);
 					console.log("cleared");
 				}
 			}
 		}, 2000);
-	}, []);
-
-	async function gB(id) {
-		const response = await createBill(id);
-		setBill(response);
-		console.log(response);
 	}
 
 	async function sendRequest(address) {
@@ -199,8 +198,13 @@ export const Bill = () => {
 						</Box>
 					</Box>
 				</Box>
-				<Box mt={2}>
+				<Box mt={2} textAlign="center">
 					<small style={{ color: PrimaryGrey }}>Powered by Platypus🦫</small>
+					<br />
+					<br />
+					<small style={{ color: PrimaryGrey, fontSize: "12px" }}>
+						ID: {bill.uid ? bill.uid : ""}
+					</small>
 				</Box>
 			</Box>
 		</Box>

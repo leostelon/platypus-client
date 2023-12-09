@@ -50,8 +50,8 @@ export const Notification = ({ isOpen, handleExternalClose, data }) => {
 					<h1 style={{ fontSize: "42px" }}>{data.amount}ETH</h1>
 				</Box>
 				<p style={{ fontWeight: "500" }}>
-					There is a new payment request from {shortText(data?.sender)}, click
-					pay now to proceed.
+					There is a new payment request from{" "}
+					{shortText(data.sender ? data.sender : "")}, click pay now to proceed.
 				</p>
 				<Box
 					sx={{
