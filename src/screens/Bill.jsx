@@ -5,11 +5,11 @@ import { createBill } from "../api/bill";
 import { Box } from "@mui/material";
 import QRCode from "react-qr-code";
 import { useState } from "react";
+import { PrimaryGrey } from "../constant";
 
 export const Bill = () => {
 	const { id } = useParams();
 	const [address, setAddress] = useState("");
-	console.log(id);
 
 	async function gB(id) {
 		const response = await createBill(id);
@@ -41,7 +41,7 @@ export const Bill = () => {
 					alignItems: "center",
 				}}
 			>
-				<h1>Platypus</h1>
+				<h1>Payment Request</h1>
 				<br />
 				<br />
 				<QRCode value="hey" size={150} />
@@ -120,6 +120,9 @@ export const Bill = () => {
 							<br /> • Authorize the payment.
 						</Box>
 					</Box>
+				</Box>
+				<Box mt={2}>
+					<small style={{ color: PrimaryGrey }}>Powered by Platypus🦫</small>
 				</Box>
 			</Box>
 		</Box>

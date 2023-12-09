@@ -6,6 +6,7 @@ import { Create } from './screens/Create';
 import { Payments } from './screens/Payments';
 import { User } from './screens/User';
 import { Bill } from './screens/Bill';
+import { Checkout } from './screens/Checkout';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" exact element={<PlatformSelect />} />
         <Route path="/user" exact element={<User />} />
         <Route path="/payment/:id" exact element={<Bill />} />
+        <Route path="/checkout/:bill_id" exact element={<Checkout />} />
         <Route path="/merchant" exact element={<Merchant />} />
         <Route path="/merchant/create" exact element={<Create />} />
         <Route path="/merchant/payments" exact element={<Payments />} />
