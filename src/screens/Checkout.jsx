@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -7,9 +7,14 @@ import { useState } from "react";
 import { PrimaryGrey } from "../constant";
 import { ChatMessage, getWakuNode } from "../utils/waku";
 import { createEncoder } from "@waku/sdk";
+import Web3 from "web3";
+import { getSafeProvider } from "../utils/safe";
+import Platypus from "../contracts/Platypus.json";
+import { getToken } from "../utils/jwt";
 
 export const Checkout = () => {
 	const [loading, setLoading] = useState(true);
+	const [paymentLoading, setPaymentLoading] = useState(false);
 	const { bill_id } = useParams();
 	const [bill, setBill] = useState();
 
@@ -50,6 +55,47 @@ export const Checkout = () => {
 		console.log("sent");
 	}
 
+	async function pay() {
+		try {
+			setPaymentLoading(true);
+			const p = await getSafeProvider();
+			const web3 = new Web3(p);
+
+			const contract = new web3.eth.Contract(
+				Platypus.abi,
+				"0x74242F7a20eC1ac9e378fE6C815Cc2073EeB920f"
+			);
+
+			const from = "0x080BAF4cbFBFb119d5A0e4E0151b67ef4817B0db";
+			const value = Web3.utils.toWei("0.0001", "ether");
+
+			const token = getToken({
+				address: "0x96c9c42CB339165971351c5106F11791F6c0a645",
+				amount: "0.001",
+			});
+
+			// Gas Calculation
+			const gasPrice = await web3.eth.getGasPrice();
+			const gas = await contract.methods.send(token).estimateGas({
+				from,
+				value,
+			});
+
+			await contract.methods
+				.send(token)
+				.send({ from, gasPrice, gas, value })
+				.on("receipt", async function (receipt) {
+					sendMessage();
+					setPaymentLoading(false);
+					alert("Succesfully paid🥳🍾");
+				});
+			setPaymentLoading(false);
+		} catch (error) {
+			console.log(error.message);
+			setPaymentLoading(false);
+		}
+	}
+
 	useEffect(() => {
 		gB(bill_id);
 	}, [bill_id]);
@@ -63,8 +109,22 @@ export const Checkout = () => {
 				height: "100vh",
 				width: "100vw",
 				justifyContent: "center",
+				position: "relative",
 			}}
 		>
+			<Box
+				sx={{
+					backgroundColor: "#f3f3f3",
+					height: "351px",
+					width: "351px",
+					position: "absolute",
+					top: "50%",
+					bottom: "50%",
+					margin: "auto",
+					zIndex: -1,
+					borderRadius: "50%",
+				}}
+			></Box>
 			<Box
 				sx={{
 					// backgroundColor: "#FDE9E9",
@@ -88,7 +148,13 @@ export const Checkout = () => {
 							textAlign: "left",
 						}}
 					>
-						<p>You are paying</p>
+						<p>
+							You are paying{" "}
+							<span style={{ fontWeight: "600" }}>
+								{bill.payment.amount}ETH
+							</span>
+							&nbsp; to
+						</p>
 						<h4>{bill.payment.address}</h4>
 					</Box>
 				</Box>
@@ -110,10 +176,14 @@ export const Checkout = () => {
 							textAlign: "center",
 						}}
 						onClick={async () => {
-							sendMessage();
+							pay();
 						}}
 					>
-						Pay
+						{paymentLoading ? (
+							<CircularProgress size={"15px"} sx={{ color: "white" }} />
+						) : (
+							"Pay"
+						)}
 					</Box>
 				</Box>
 			</Box>

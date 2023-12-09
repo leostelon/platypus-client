@@ -19,10 +19,10 @@ export async function safeSignin() {
     const authKitSignData = await safeAuthPack.signIn();
     localStorage.setItem("address", authKitSignData.eoa);
     console.log("Auth kit here", authKitSignData);
-    safeProvider = getSafeProvider();
 }
 
-export function getSafeProvider() {
+export async function getSafeProvider() {
+    await initSafeAuthPack();
     return safeAuthPack.getProvider();
 }
 
