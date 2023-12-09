@@ -1,4 +1,5 @@
 import { SafeAuthPack } from "@safe-global/auth-kit";
+import Web3 from "web3";
 
 const safeAuthInitOptions = {
     // enableLogging: true,
@@ -27,4 +28,12 @@ export function getSafeProvider() {
 
 export async function initSafeAuthPack() {
     await safeAuthPack.init(safeAuthInitOptions);
+}
+
+export async function getWeb3() {
+    await initSafeAuthPack()
+    const p = getSafeProvider();
+    console.log("provider here", p)
+    const web3 = new Web3(p);
+    return web3;
 }

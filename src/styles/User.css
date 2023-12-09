@@ -1,0 +1,9 @@
+.user-action-button {
+	padding: 12px;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 24px;
+	cursor: pointer;
+}
