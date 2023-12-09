@@ -3,14 +3,19 @@
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "_jwt",
-                    "type": "string"
+                    "internalType": "address[]",
+                    "name": "_address",
+                    "type": "address[]"
+                },
+                {
+                    "internalType": "uint256[]",
+                    "name": "_amount",
+                    "type": "uint256[]"
                 }
             ],
-            "name": "send",
+            "name": "distributeFunds",
             "outputs": [],
-            "stateMutability": "payable",
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -43,6 +48,19 @@
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "_jwt",
+                    "type": "string"
+                }
+            ],
+            "name": "send",
+            "outputs": [],
+            "stateMutability": "payable",
             "type": "function"
         }
     ]

@@ -12,6 +12,7 @@ import { waitForRemotePeer, Protocols } from "@waku/sdk";
 import { getWakuNode, initNode, } from './utils/waku';
 import { useEffect } from 'react';
 import { Completed } from './screens/Completed';
+import { Admin } from './screens/Admin';
 
 function App() {
   // start waku
@@ -42,6 +43,7 @@ function App() {
         <Route path="/merchant" exact element={<Merchant />} />
         <Route path="/merchant/create" exact element={<Create />} />
         <Route path="/merchant/payments" exact element={<Payments />} />
+        <Route path="/merchant/admin" exact element={<Admin />} />
         <Route path="/completed" exact element={<Completed />} />
       </Routes>
     </Router>
