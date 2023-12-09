@@ -1,0 +1,29 @@
+/* Default text-input */
+.default-text-input input {
+	margin-left: 0px;
+	border-radius: 0px;
+	font-weight: 500;
+	font-size: 12px;
+	width: 100%;
+}
+
+.default-text-input {
+	display: flex;
+	background-color: #e8e8e89f;
+	border-radius: 8px;
+	padding: 4px 10px;
+	height: 36px;
+	align-items: center;
+	color: #828488;
+}
+
+.default-text-input input {
+	border: none;
+	background-color: rgba(255, 255, 255, 0);
+	margin-left: 8px;
+}
+
+.default-text-input input:focus {
+	outline: none;
+}
+/* End Default text-input */
