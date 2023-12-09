@@ -20,3 +20,19 @@ export const createPayment = async function (amount) {
         console.log(error.message);
     }
 };
+
+export const getPayments = async function () {
+    try {
+        let address = localStorage.getItem("address");
+        const response = await axios.get(SERVER_URL + `/payment/${address}`, {
+            headers: {
+                "Content-Type": `application/json`,
+            },
+        });
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+};

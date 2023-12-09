@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PlatformSelect } from './screens/PlatformSelect';
 import { Merchant } from './screens/Merchant';
 import { Create } from './screens/Create';
+import { Payments } from './screens/Payments';
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" exact element={<PlatformSelect />} />
         <Route path="/merchant" exact element={<Merchant />} />
         <Route path="/merchant/create" exact element={<Create />} />
+        <Route path="/merchant/payments" exact element={<Payments />} />
       </Routes>
     </Router>
   );
