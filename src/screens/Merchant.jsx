@@ -16,6 +16,7 @@ export const Merchant = () => {
 	const [address, setAddress] = useState("");
 	const [paymentLoading, setPaymentLoading] = useState(true);
 	const [payments, setPayments] = useState([]);
+	const [balance, setBalance] = useState("0");
 	const [transactions, setTransactions] = useState({
 		amount: [],
 		time: [],
@@ -33,6 +34,13 @@ export const Merchant = () => {
 		const ad = localStorage.getItem("address");
 		setAddress(ad);
 		gT(ad);
+		getBalance(ad);
+	}
+
+	async function getBalance(ad) {
+		const web3 = new Web3("https://forno.celo.org");
+		const b = await web3.eth.getBalance(address);
+		setBalance(Number(Web3.utils.fromWei(b, "ether")).toFixed(4));
 	}
 
 	async function gT(ad) {
@@ -129,7 +137,7 @@ export const Merchant = () => {
 										sx={{ display: "flex", justifyContent: "space-between" }}
 									>
 										<h2>EVM Chain</h2>
-										<h2>0.5ETH</h2>
+										<h2>{balance}ETH</h2>
 									</Box>
 									<Box
 										sx={{

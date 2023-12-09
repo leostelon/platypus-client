@@ -4,7 +4,6 @@ import { PrimaryGrey } from "../constant";
 import { MdAdd, MdOutlineArrowOutward } from "react-icons/md";
 import { shortText } from "../utils/shortText";
 import { useEffect, useRef, useState } from "react";
-import { getWeb3 } from "../utils/safe";
 import Web3 from "web3";
 import { Notification } from "../components/Notification";
 import { ChatMessage, getWakuNode } from "../utils/waku";
@@ -49,7 +48,7 @@ export const User = () => {
 		try {
 			const address = localStorage.getItem("address");
 			setAddress(address);
-			const web3 = await getWeb3();
+			const web3 = new Web3("https://forno.celo.org");
 			const b = await web3.eth.getBalance(address);
 			setBalance(Number(Web3.utils.fromWei(b, "ether")).toFixed(4));
 		} catch (error) {
@@ -66,7 +65,7 @@ export const User = () => {
 		if (!a || a === undefined || a === "") {
 			return window.location.replace("/");
 		}
-		// getBalance();
+		getBalance();
 		let connected = false;
 		let timer = setInterval(async () => {
 			if (!connected) {
